@@ -4,6 +4,7 @@
          width="400">
     <figcaption>This is the doxudio logo with text.</figcaption>
 </figure>
+
 # doxudio is a liteweight ebook/audiobook platform.
 
 ## Key Features:
