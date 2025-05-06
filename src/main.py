@@ -74,8 +74,8 @@ class PDFReaderApp(ctk.CTk):
         self.viewer = ctk.CTkLabel(self.content_frame, text="")
         self.viewer.grid(row=0, column=0, columnspan=3, sticky="nsew")
         
-        self.icon_left = ctk.CTkImage(light_image=Image.open("icons/prev_page.png"), size=(24, 24))
-        self.icon_right = ctk.CTkImage(light_image=Image.open("icons/next_page.png"), size=(24, 24))
+        self.icon_left = ctk.CTkImage(light_image=Image.open("../img/icons/prev_page.png"), size=(24, 24))
+        self.icon_right = ctk.CTkImage(light_image=Image.open("../img/icons/next_page.png"), size=(24, 24))
         
 # Navigation container frame
         self.nav_frame = ctk.CTkFrame(self.content_frame, fg_color="transparent")
