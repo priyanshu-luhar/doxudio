@@ -5,29 +5,20 @@ from threading import Thread
 
 class LoadingScreen:
     def __init__(self):
-        # Create main window
         self.root = ctk.CTk()
         self.root.title("Loading...")
         self.root.geometry("400x200")
         self.root.resizable(False, False)
-
-        # Set appearance
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("blue")
-
-        # Create loading frame
         self.frame = ctk.CTkFrame(self.root, corner_radius=10)
         self.frame.pack(pady=20, padx=20, fill="both", expand=True)
-
-        # Loading label
         self.loading_label = ctk.CTkLabel(
             self.frame,
             text="Loading Application",
             font=("Arial", 18, "bold")
         )
         self.loading_label.pack(pady=(30, 10))
-
-        # Progress bar
         self.progressbar = ctk.CTkProgressBar(
             self.frame,
             orientation="horizontal",
@@ -38,16 +29,12 @@ class LoadingScreen:
         )
         self.progressbar.pack(pady=10)
         self.progressbar.start()
-
-        # Percentage label
         self.percentage_label = ctk.CTkLabel(
             self.frame,
             text="0%",
             font=("Arial", 14)
         )
         self.percentage_label.pack(pady=5)
-
-        # Message label
         self.message_label = ctk.CTkLabel(
             self.frame,
             text="Initializing components...",
@@ -55,14 +42,11 @@ class LoadingScreen:
             text_color="gray"
         )
         self.message_label.pack(pady=5)
-
-        # Start loading simulation in a separate thread
         self.loading_thread = Thread(target=self.simulate_loading)
         self.loading_thread.daemon = True
         self.loading_thread.start()
 
     def simulate_loading(self):
-        """Simulate a loading process with changing messages"""
         messages = [
             "Loading configuration...",
             "Connecting to database...",
@@ -72,23 +56,12 @@ class LoadingScreen:
         ]
 
         for i in range(1, 101):
-            time.sleep(0.05)  # Simulate work being done
-
-            # Update percentage
+            time.sleep(0.05)
             self.percentage_label.configure(text=f"{i}%")
-
-            # Update message every 20%
             if i % 20 == 0:
                 msg_index = min(i // 20 - 1, len(messages) - 1
                 self.message_label.configure(text=messages[msg_index])
-
-                # Update progress bar (if in determinate mode)
-                # self.progressbar.set(i/100)
-
-                # Update the UI
                 self.root.update()
-
-                # Loading complete
                 time.sleep(0.5)
                 self.root.destroy()
 
@@ -100,6 +73,4 @@ if __name__ == "__main__":
     loading_screen = LoadingScreen()
     loading_screen.run()
 
-    # After loading screen completes, you would launch your main application
     print("Loading complete! Launching main application...")
-    # Your main application code would go here
