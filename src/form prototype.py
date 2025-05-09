@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from tkinter import messagebox
+from PIL import Image
 
 ctk.set_appearance_mode("light")  
 ctk.set_default_color_theme("blue")  
@@ -17,6 +18,7 @@ class LoginApp(ctk.CTk):
         self.primary_color = "#4FC3F7"  
         self.text_color = "#333333"
         self.configure(fg_color=self.bg_color)
+        my_image = customtkinter.CTKImage(light_image=Image.open('img/doxudio_light.png'),dark_image=Image.open('doxudio_dark.png'))
         self.login_frame = ctk.CTkFrame(self, fg_color=self.frame_color)
         self.login_frame.pack(pady=40, padx=20, fill="both", expand=True)
         self.create_widgets()
