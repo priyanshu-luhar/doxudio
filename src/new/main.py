@@ -3,6 +3,7 @@ import fitz  # PyMuPDF
 from PIL import Image
 import customtkinter as ctk
 from tkinter import filedialog
+from library import LibraryApp as LibraryView
 
 DISPLAY_NAME = "Priyanshu"
 
@@ -88,7 +89,7 @@ class PDFReaderApp(ctk.CTk):
 # Navigation widgets
         self.prev_button = ctk.CTkButton(self.nav_frame, image=self.icon_left, text="", width=40, command=self.prev_page, border_width=2, border_color="white")
         self.next_button = ctk.CTkButton(self.nav_frame, image=self.icon_right, text="", width=40, command=self.next_page, border_width=2, border_color="white")
-        self.page_label = ctk.CTkLabel(self.nav_frame, text="Page: -", font=self.sidebar_font)
+        self.page_label = ctk.CTkLabel(self.nav_frame, text="Page: -", font=ctk.CTkFont(size=14, weight="bold"))
 
         self.prev_button.grid(row=0, column=0, padx=(10, 5))
         self.next_button.grid(row=0, column=1, padx=(5, 10))
@@ -105,7 +106,7 @@ class PDFReaderApp(ctk.CTk):
             filename = os.path.basename(filepath)
             if filename not in self.loaded_pdfs:
                 self.loaded_pdfs[filename] = filepath
-                btn = ctk.CTkButton(self.file_listbox, fg_color='Green', border_width=2, border_color="purple", text=filename, font=self.sidebar_file_font, 
+                btn = ctk.CTkButton(self.file_listbox, text=filename, font=self.sidebar_file_font, 
                                     command=lambda path=filepath: self.open_pdf(path))
                 btn.pack(fill="x", pady=5, padx=5)
                 self.pdf_buttons.append(btn)
@@ -118,8 +119,8 @@ class PDFReaderApp(ctk.CTk):
                     full_path = os.path.join(folder_path, file)
                     if file not in self.loaded_pdfs:
                         self.loaded_pdfs[file] = full_path
-                        btn = ctk.CTkButton(self.file_listbox, fg_color='Green', border_width=2, border_color="purple", text=fil, font=self.sidebar_file_font, 
-                                            command=lambda path=filepath: self.open_pdf(path))
+                        btn = ctk.CTkButton(self.file_listbox, text=file, font=self.sidebar_file_font, 
+                                            command=lambda path=full_path: self.open_pdf(path))
                         btn.pack(fill="x", pady=5, padx=5)
                         self.pdf_buttons.append(btn)
 
@@ -178,14 +179,25 @@ class PDFReaderApp(ctk.CTk):
             self.current_page -= 1
             self.display_current_page()
 
-
     def switch_view(self, view_name):
-        # Placeholder for switching views
-        self.viewer.configure(image=None, text=f"{view_name.capitalize()} view - under construction")
-        self.page_label.configure(text="Page: -")
-        self.current_doc = None
-        self.total_pages = 0
-        self.current_page = 0
+        # Clear current content
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()
+
+        if view_name == "library":
+            self.current_doc = None
+            self.total_pages = 0
+            self.current_page = 0
+            library_view = LibraryView()
+            library_view.master = self.content_frame
+            library_view.pack(expand=True, fill="both")
+        elif view_name == "home":
+            self.viewer = ctk.CTkLabel(self.content_frame, text="Home View - Under Construction")
+            self.viewer.grid(row=0, column=0, sticky="nsew")
+        elif view_name == "audiobooks":
+            self.viewer = ctk.CTkLabel(self.content_frame, text="Audiobook View - Under Construction")
+            self.viewer.grid(row=0, column=0, sticky="nsew")
+
 
 
 if __name__ == "__main__":
