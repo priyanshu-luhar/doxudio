@@ -1,4 +1,6 @@
 
 DISPLAY_NAME = ""
 
-USER_GENRES = ""`
+me = None
+
+USER_GENRES = ""

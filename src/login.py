@@ -2,12 +2,13 @@ import customtkinter as ctk
 from PIL import Image, ImageTk
 from server_utils import login_user, add_user_to_server, hash_password
 from main import PDFReaderApp
-
+import globals
 
 class AuthWindow(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("doxudio")
+        self.geometry("+0+0")
         self.geometry("1200x800")
         self.resizable(False, False)
 
@@ -126,7 +127,7 @@ class AuthWindow(ctk.CTk):
             result = login_user(uname, hashed)
             if result["status"] == "success":
                 self.status_label.configure(text="Login successful!", text_color="green")
-                print("User:", result["user"])
+                globals.me = result["user"]  # Save user globally
 
                 self.destroy()  # Close the login window
                 reader_app = PDFReaderApp()
@@ -149,5 +150,6 @@ class AuthWindow(ctk.CTk):
 if __name__ == "__main__":
     ctk.set_appearance_mode("System")
     ctk.set_default_color_theme("blue")
+    #ctk.set_default_color_theme("green")
     app = AuthWindow()
     app.mainloop()
