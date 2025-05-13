@@ -11,7 +11,8 @@ class LibraryApp(ctk.CTk):
         super().__init__()
         self.title("doxudio")
         self.geometry("1200x800")
-
+        self.resizable(False, False)
+        
         # Font
         self.default_font = ctk.CTkFont(family="Silom", size=14)
 

@@ -3,6 +3,7 @@ import fitz  # PyMuPDF
 from PIL import Image
 import customtkinter as ctk
 from tkinter import filedialog
+from library import LibraryApp
 
 DISPLAY_NAME = "Priyanshu"
 
@@ -14,6 +15,7 @@ class PDFReaderApp(ctk.CTk):
         super().__init__()
         self.title("doxudio")
         self.geometry("1200x800")
+        self.resizable(False, False)
 
         # Layout
         self.grid_columnconfigure(0, minsize=350)
@@ -181,11 +183,16 @@ class PDFReaderApp(ctk.CTk):
 
     def switch_view(self, view_name):
         # Placeholder for switching views
-        self.viewer.configure(image=None, text=f"{view_name.capitalize()} view - under construction")
-        self.page_label.configure(text="Page: -")
-        self.current_doc = None
-        self.total_pages = 0
-        self.current_page = 0
+        if view_name == "library":
+                self.destroy()  # Close the login window
+                lib_app = LibraryApp()
+                lib_app.mainloop()
+        else:
+            self.viewer.configure(image=None, text=f"{view_name.capitalize()} view - under construction")
+            self.page_label.configure(text="Page: -")
+            self.current_doc = None
+            self.total_pages = 0
+            self.current_page = 0
 
 
 if __name__ == "__main__":

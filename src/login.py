@@ -1,6 +1,8 @@
 import customtkinter as ctk
 from PIL import Image, ImageTk
 from server_utils import login_user, add_user_to_server, hash_password
+from main import PDFReaderApp
+
 
 class AuthWindow(ctk.CTk):
     def __init__(self):
@@ -42,7 +44,7 @@ class AuthWindow(ctk.CTk):
         self.content_frame.columnconfigure(0, weight=1)
 
         # Theme toggle button
-        self.theme_toggle = ctk.CTkButton(self.content_frame, text="🌙", width=60, font=self.font_button, command=self.toggle_theme)
+        self.theme_toggle = ctk.CTkButton(self.content_frame, text="♞", width=60, font=self.font_button, command=self.toggle_theme)
         self.theme_toggle.grid(row=0, column=0, sticky="ne", padx=20, pady=20)
 
         # Title
@@ -78,11 +80,11 @@ class AuthWindow(ctk.CTk):
         if self.current_theme == "Dark":
             ctk.set_appearance_mode("Light")
             self.current_theme = "Light"
-            self.theme_toggle.configure(text="🌙")
+            self.theme_toggle.configure(text="♘")
         else:
             ctk.set_appearance_mode("Dark")
             self.current_theme = "Dark"
-            self.theme_toggle.configure(text="☀️")
+            self.theme_toggle.configure(text="♞")
 
     def switch_mode(self):
         if self.current_mode == "login":
@@ -110,6 +112,7 @@ class AuthWindow(ctk.CTk):
 
         hashed = hash_password(pw)
 
+        '''
         if self.current_mode == "login":
             result = login_user(uname, hashed)
             if result["status"] == "success":
@@ -117,7 +120,19 @@ class AuthWindow(ctk.CTk):
                 print("User:", result["user"])  # TODO: integrate with main app
             else:
                 self.status_label.configure(text=result["message"], text_color="red")
+        '''
 
+        if self.current_mode == "login":
+            result = login_user(uname, hashed)
+            if result["status"] == "success":
+                self.status_label.configure(text="Login successful!", text_color="green")
+                print("User:", result["user"])
+
+                self.destroy()  # Close the login window
+                reader_app = PDFReaderApp()
+                reader_app.mainloop()
+            else:
+                self.status_label.configure(text=result["message"], text_color="red")
         elif self.current_mode == "signup":
             fname = self.fname_entry.get().strip()
             lname = self.lname_entry.get().strip()
