@@ -5,8 +5,7 @@ from io import BytesIO
 import globals
 
 ctk.set_appearance_mode("System")
-#ctk.set_default_color_theme("blue")
-ctk.set_default_color_theme("green")
+ctk.set_default_color_theme("blue")
 
 class LibraryApp(ctk.CTk):
     def __init__(self):
@@ -126,6 +125,11 @@ class LibraryApp(ctk.CTk):
         elif view_name == "profile":
             from profile import ProfileWindow
             ProfileWindow(globals.me).mainloop()
+        elif view_name == "database":
+            from database import DatabaseApp
+            self.destroy()
+            db_app = DatabaseApp()
+            db_app.mainloop()
 
 if __name__ == "__main__":
     app = LibraryApp()

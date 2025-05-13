@@ -2,20 +2,44 @@ import customtkinter as ctk
 import requests
 from PIL import Image
 from io import BytesIO
+import globals
 
 ctk.set_appearance_mode("System")
-ctk.set_default_color_theme("blue")
+#ctk.set_default_color_theme("blue")
+ctk.set_default_color_theme("green")
 
 class LibraryApp(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.title("Library Search")
-        self.geometry("800x600")
+        self.title("Library - Doxudio")
+        self.geometry("+0+0")
+        self.geometry("1200x800")
+        self.resizable(False, False)
 
-        # Font
-        self.default_font = ctk.CTkFont(family="Helvetica", size=14)
+        # Fonts
+        self.top_nav_font = ctk.CTkFont(family="Silom", size=18)
+        self.default_font = ctk.CTkFont(family="Silom", size=14)
 
-        # Search bar frame
+
+        # Top Navigation Bar
+        self.top_nav = ctk.CTkFrame(self, height=50)
+        self.top_nav.grid_columnconfigure(4, weight=1)
+        self.top_nav.pack(fill="x")
+
+        self.home_button = ctk.CTkButton(self.top_nav, text="Home", font=self.top_nav_font, command=lambda: self.switch_view("home"))
+        self.library_button = ctk.CTkButton(self.top_nav, text="Library", font=self.top_nav_font, command=lambda: self.switch_view("library"))
+        self.database_button = ctk.CTkButton(self.top_nav, text="Database", font=self.top_nav_font)
+        self.audio_button = ctk.CTkButton(self.top_nav, text="Audiobooks", font=self.top_nav_font)
+        self.profile_menu = ctk.CTkOptionMenu(self.top_nav, font=self.top_nav_font, values=["Profile", "Settings", "Logout"], command=self.handle_profile_menu)
+        self.profile_menu.set(globals.me["fname"])
+
+        self.home_button.grid(row=0, column=0, padx=10, pady=8)
+        self.library_button.grid(row=0, column=1, padx=10, pady=8)
+        self.audio_button.grid(row=0, column=2, padx=10, pady=8)
+        self.database_button.grid(row=0, column=3, padx=10, pady=8)
+        self.profile_menu.grid(row=0, column=5, padx=20, pady=8)
+        
+        # Search bar
         self.search_frame = ctk.CTkFrame(self)
         self.search_frame.pack(pady=20, padx=20, fill="x")
 
@@ -25,7 +49,7 @@ class LibraryApp(ctk.CTk):
         self.search_button = ctk.CTkButton(self.search_frame, text="Search", font=self.default_font, command=self.search_books)
         self.search_button.pack(side="right", pady=10)
 
-        # Results frame
+        # Results
         self.results_frame = ctk.CTkScrollableFrame(self)
         self.results_frame.pack(fill="both", expand=True, padx=20, pady=10)
 
@@ -42,7 +66,7 @@ class LibraryApp(ctk.CTk):
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
-                books = data.get("docs", [])[:20]
+                books = data.get("docs", [])[:40]
                 row, col = 0, 0
 
                 for book in books:
@@ -51,23 +75,27 @@ class LibraryApp(ctk.CTk):
                     author = ", ".join(book.get("author_name", ["Unknown Author"]))
                     year = book.get("first_publish_year", "N/A")
 
-                    # Create frame for each book
                     book_frame = ctk.CTkFrame(self.results_frame)
-                    book_frame.grid(row=row, column=col, padx=10, pady=10)
+                    book_frame.grid(row=row, column=col, padx=40, pady=20)
 
                     if cover_id:
                         img_url = f"https://covers.openlibrary.org/b/id/{cover_id}-M.jpg"
                         img_data = requests.get(img_url).content
-                        img = Image.open(BytesIO(img_data)).resize((100, 150))
-                        ctk_img = ctk.CTkImage(light_image=img, size=(100, 150))
+                        img = Image.open(BytesIO(img_data)).resize((200, 300))
+                        ctk_img = ctk.CTkImage(light_image=img, size=(200, 300))
                         img_label = ctk.CTkLabel(book_frame, image=ctk_img, text="")
-                        img_label.image = ctk_img  # Keep reference
+                        img_label.image = ctk_img
                         img_label.pack()
                     else:
-                        no_img_label = ctk.CTkLabel(book_frame, text="[No Cover]", width=100, height=150)
-                        no_img_label.pack()
+                        ctk.CTkLabel(book_frame, text="[No Cover]", width=200, height=300).pack()
 
-                    text_label = ctk.CTkLabel(book_frame, text=f"{title}\n{author}\n{year}", font=self.default_font, justify="center", wraplength=120)
+                    text_label = ctk.CTkLabel(
+                        book_frame, 
+                        text=f"{title}\n{author}\n{year}", 
+                        font=self.default_font, 
+                        justify="center", 
+                        wraplength=160
+                    )
                     text_label.pack(pady=(5, 0))
 
                     col += 1
@@ -80,8 +108,24 @@ class LibraryApp(ctk.CTk):
             self.show_error(str(e))
 
     def show_error(self, msg):
-        error_label = ctk.CTkLabel(self.results_frame, text=f"Error: {msg}", text_color="red", font=self.default_font)
-        error_label.pack(pady=10)
+        ctk.CTkLabel(self.results_frame, text=f"Error: {msg}", text_color="red", font=self.default_font).pack(pady=10)
+
+    def handle_profile_menu(self, choice):
+        if choice == "Profile":
+            self.switch_view("profile")
+        elif choice == "Logout":
+            self.destroy()
+            from login import AuthWindow
+            AuthWindow().mainloop()
+
+    def switch_view(self, view_name):
+        self.destroy()
+        if view_name == "home":
+            from main import PDFReaderApp
+            PDFReaderApp().mainloop()
+        elif view_name == "profile":
+            from profile import ProfileWindow
+            ProfileWindow(globals.me).mainloop()
 
 if __name__ == "__main__":
     app = LibraryApp()

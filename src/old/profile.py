@@ -84,11 +84,6 @@ class ProfileWindow(ctk.CTk):
         elif view_name == "library":
             from library import LibraryApp
             LibraryApp().mainloop()
-        elif view_name == "database":
-            from database import DatabaseApp
-            self.destroy()
-            db_app = DatabaseApp()
-            db_app.mainloop()
         elif view_name == "profile":
             ProfileWindow(globals.me).mainloop()
 

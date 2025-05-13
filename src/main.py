@@ -5,6 +5,7 @@ import customtkinter as ctk
 from tkinter import filedialog
 from library import LibraryApp
 from profile import ProfileWindow
+from database import DatabaseApp
 import globals
 
 DISPLAY_NAME = "Priyanshu"
@@ -194,11 +195,14 @@ class PDFReaderApp(ctk.CTk):
 
 
     def switch_view(self, view_name):
-        # Placeholder for switching views
         if view_name == "library":
-                self.destroy()  # Close the login window
-                lib_app = LibraryApp()
-                lib_app.mainloop()
+            self.destroy()
+            lib_app = LibraryApp()
+            lib_app.mainloop()
+        elif view_name == "database":
+            self.destroy()
+            db_app = DatabaseApp()
+            db_app.mainloop()
         else:
             self.viewer.configure(image=None, text=f"{view_name.capitalize()} view - under construction")
             self.page_label.configure(text="Page: -")

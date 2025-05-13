@@ -3,17 +3,23 @@ import fitz  # PyMuPDF
 from PIL import Image
 import customtkinter as ctk
 from tkinter import filedialog
+from library import LibraryApp
+from profile import ProfileWindow
+import globals
 
 DISPLAY_NAME = "Priyanshu"
 
 ctk.set_appearance_mode("System")
-ctk.set_default_color_theme("blue")
+#ctk.set_default_color_theme("blue")
+#ctk.set_default_color_theme("green")
 
 class PDFReaderApp(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("doxudio")
+        self.geometry("+0+0")
         self.geometry("1200x800")
+        self.resizable(False, False)
 
         # Layout
         self.grid_columnconfigure(0, minsize=350)
@@ -33,19 +39,27 @@ class PDFReaderApp(ctk.CTk):
         self.top_nav.grid_columnconfigure(0, weight=0)
         self.top_nav.grid_columnconfigure(1, weight=0)
         self.top_nav.grid_columnconfigure(2, weight=0)
-        self.top_nav.grid_columnconfigure(3, weight=1)
-        self.top_nav.grid_columnconfigure(4, weight=0)
+        self.top_nav.grid_columnconfigure(3, weight=0)
+        self.top_nav.grid_columnconfigure(4, weight=1)
+        self.top_nav.grid_columnconfigure(5, weight=0)
 
         self.home_button = ctk.CTkButton(self.top_nav, text="Home", font=self.top_nav_font, command=lambda: self.switch_view("home"))
         self.library_button = ctk.CTkButton(self.top_nav, text="Library", font=self.top_nav_font, command=lambda: self.switch_view("library"))
+        self.database_button = ctk.CTkButton(self.top_nav, text="Database", font=self.top_nav_font, command=lambda: self.switch_view("database"))
         self.audio_button = ctk.CTkButton(self.top_nav, text="Audiobooks", font=self.top_nav_font, command=lambda: self.switch_view("audiobooks"))
-        self.profile_menu = ctk.CTkOptionMenu(self.top_nav, font=self.top_nav_font, values=["Profile", "Settings", "Logout"])
-        self.profile_menu.set(DISPLAY_NAME)
+        self.profile_menu = ctk.CTkOptionMenu(
+            self.top_nav,
+            font=self.top_nav_font,
+            values=["Profile", "Settings", "Logout"],
+            command=self.handle_profile_menu
+        )
+        self.profile_menu.set(globals.me["fname"])
 
         self.home_button.grid(row=0, column=0, padx=10, pady=8)
         self.library_button.grid(row=0, column=1, padx=10, pady=8)
         self.audio_button.grid(row=0, column=2, padx=10, pady=8)
-        self.profile_menu.grid(row=0, column=4, padx=20, pady=8)
+        self.database_button.grid(row=0, column=3, padx=10, pady=8)
+        self.profile_menu.grid(row=0, column=5, padx=20, pady=8)
 
         # Sidebar
         self.sidebar = ctk.CTkFrame(self, width=350)
@@ -88,7 +102,7 @@ class PDFReaderApp(ctk.CTk):
 # Navigation widgets
         self.prev_button = ctk.CTkButton(self.nav_frame, image=self.icon_left, text="", width=40, command=self.prev_page, border_width=2, border_color="white")
         self.next_button = ctk.CTkButton(self.nav_frame, image=self.icon_right, text="", width=40, command=self.next_page, border_width=2, border_color="white")
-        self.page_label = ctk.CTkLabel(self.nav_frame, text="Page: -", font=ctk.CTkFont(size=14, weight="bold"))
+        self.page_label = ctk.CTkLabel(self.nav_frame, text="Page: -", font=self.sidebar_font)
 
         self.prev_button.grid(row=0, column=0, padx=(10, 5))
         self.next_button.grid(row=0, column=1, padx=(5, 10))
@@ -105,7 +119,7 @@ class PDFReaderApp(ctk.CTk):
             filename = os.path.basename(filepath)
             if filename not in self.loaded_pdfs:
                 self.loaded_pdfs[filename] = filepath
-                btn = ctk.CTkButton(self.file_listbox, text=filename, font=self.sidebar_file_font, 
+                btn = ctk.CTkButton(self.file_listbox, fg_color='Green', border_width=2, border_color="purple", text=filename, font=self.sidebar_file_font, 
                                     command=lambda path=filepath: self.open_pdf(path))
                 btn.pack(fill="x", pady=5, padx=5)
                 self.pdf_buttons.append(btn)
@@ -118,8 +132,8 @@ class PDFReaderApp(ctk.CTk):
                     full_path = os.path.join(folder_path, file)
                     if file not in self.loaded_pdfs:
                         self.loaded_pdfs[file] = full_path
-                        btn = ctk.CTkButton(self.file_listbox, text=file, font=self.sidebar_file_font, 
-                                            command=lambda path=full_path: self.open_pdf(path))
+                        btn = ctk.CTkButton(self.file_listbox, fg_color='Green', border_width=2, border_color="purple", text=fil, font=self.sidebar_file_font, 
+                                            command=lambda path=filepath: self.open_pdf(path))
                         btn.pack(fill="x", pady=5, padx=5)
                         self.pdf_buttons.append(btn)
 
@@ -181,11 +195,29 @@ class PDFReaderApp(ctk.CTk):
 
     def switch_view(self, view_name):
         # Placeholder for switching views
-        self.viewer.configure(image=None, text=f"{view_name.capitalize()} view - under construction")
-        self.page_label.configure(text="Page: -")
-        self.current_doc = None
-        self.total_pages = 0
-        self.current_page = 0
+        if view_name == "library":
+                self.destroy()  # Close the login window
+                lib_app = LibraryApp()
+                lib_app.mainloop()
+        else:
+            self.viewer.configure(image=None, text=f"{view_name.capitalize()} view - under construction")
+            self.page_label.configure(text="Page: -")
+            self.current_doc = None
+            self.total_pages = 0
+            self.current_page = 0
+
+
+    def handle_profile_menu(self, choice):
+        if choice == "Profile":
+            self.destroy()
+            app = ProfileWindow(globals.me)
+            app.mainloop()
+        elif choice == "Logout":
+            self.destroy()
+            from login import AuthWindow
+            app = AuthWindow()
+            app.mainloop()
+        # "Settings" can be handled later
 
 
 if __name__ == "__main__":
