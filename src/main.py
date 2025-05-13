@@ -133,8 +133,8 @@ class PDFReaderApp(ctk.CTk):
                     full_path = os.path.join(folder_path, file)
                     if file not in self.loaded_pdfs:
                         self.loaded_pdfs[file] = full_path
-                        btn = ctk.CTkButton(self.file_listbox, fg_color='Green', border_width=2, border_color="purple", text=fil, font=self.sidebar_file_font, 
-                                            command=lambda path=filepath: self.open_pdf(path))
+                        btn = ctk.CTkButton(self.file_listbox, text=file, font=self.sidebar_file_font, 
+                                            command=lambda path=full_path: self.open_pdf(path))
                         btn.pack(fill="x", pady=5, padx=5)
                         self.pdf_buttons.append(btn)
 
